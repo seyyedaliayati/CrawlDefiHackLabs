@@ -30,5 +30,5 @@ Number of Test Cases: 233
 # TODOs
 - [ ] Update files to store in csv instead of json.
 - [ ] Update ChatGPT prompt.
-- [ ] Create the train/eval dataset.
-
+- [ ] Create the train/eval dataset --> (interface, vuln, testcase, explain).
+- [ ] Check if more properties are needed?
