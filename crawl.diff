@@ -1,0 +1,603 @@
+diff --git a/README.md b/README.md
+index 6322247..1208919 100644
+--- a/README.md
++++ b/README.md
+@@ -1,549 +1,3 @@
+-# DeFi Hacks Reproduce - Foundry
+-
+-**Reproduce DeFi hack incidents using Foundry.**
+-
+-234 incidents included.
+-
+-This repo is only for the educational purpose.
+-
+-Let's make Web3 secure! Join [Discord](https://discord.gg/Fjyngakf3h)
+-
+-Notion: [101 root cause analysis of past DeFi hacked incidents](https://web3sec.xrex.io/)
+-
+-[Transaction debugging tools](https://github.com/SunWeb3Sec/DeFiHackLabs/#transaction-debugging-tools)
+-
+-## Getting Started
+-
+-- Follow the [instructions](https://book.getfoundry.sh/getting-started/installation.html) to install [Foundry](https://github.com/foundry-rs/foundry).
+-
+-- Clone and install dependencies:`git submodule update --init --recursive`
+-
+-## [Web3 Cybersecurity Academy](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy)
+-
+-All articles are also published on [Substack](https://defihacklabs.substack.com/).
+-
+-### OnChain transaction debugging (Ongoing)
+-
+-- Lesson 1: Tools ( [English](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/01_tools/en) | [中文](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/01_tools) | [Vietnamese](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/01_tools/vi) | [Korean](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/01_tools/ko) )
+-- Lesson 2: Warm up ( [English](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/02_warmup/en/) | [中文](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/02_warmup/) | [Korean](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/02_warmup/ko) )
+-- Lesson 3: Write Your Own PoC (Price Oracle Manipulation) ( [English](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/03_write_your_own_poc/en/) | [中文](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/03_write_your_own_poc/) | [Korean](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/03_write_your_own_poc/ko) )
+-- Lesson 4: Write Your Own PoC (MEV Bot) ( [English](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/04_write_your_own_poc/en/) | [中文](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/04_write_your_own_poc/) | [Korean](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/04_write_your_own_poc/kr/) )
+-- Lesson 5: Rugpull Analysis ( [English](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/05_Rugpull/en/) | [中文](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/05_Rugpull/) )
+-- Lesson 6: Write Your Own PoC (Reentrancy) ( [English](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/06_write_your_own_poc/en/) | [中文](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/06_write_your_own_poc/) )
+-- Lesson 7: Hack Analysis: Nomad Bridge, August 2022 ( [English](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/07_Analysis_nomad_bridge/en/) | [中文](https://github.com/SunWeb3Sec/DeFiHackLabs/tree/main/academy/onchain_debug/07_Analysis_nomad_bridge/) )
+-
+-## List of Past DeFi Incidents
+-[20230630 Biswap](#20230630-biswap---v3migrator-exploit)
+-
+-[20230628 Themis](#20230628-themis---manipulation-of-prices-using-flashloan)
+-
+-[20230624 SHIDO](#20230624-shido---business-loigc--arbitrage)
+-
+-[20230623 ShidoGlobal](#20230623-shidoglobal---flashloan-attack)
+-
+-[20230621 BabyDogeCoin02](#20230621-babydogecoin02---lack-slippage-protection)
+-
+-[20230621 BUNN](#20230621-bunn---reflection-tokens)
+-
+-[20230620 MIM](#20230620-mimspell---arbitrary-external-call-vulnerability)
+-
+-[20230618 ARA](#20230618-ara---incorrect-handling-of-permissions)
+-
+-[20230615 CFC](#20230615-cfc---uniswap-skim-token-balance-attack)
+-
+-[20230615 DEPUSDT_LEVUSDC](#20230615-depusdt_levusdc---incorrect-access-control)
+-
+-[20230611 SellToken04](#20230611-sellToken04---Price-Manipulation)
+-
+-[20230607 CompounderFinance](#20230607-compounderfinance---manipulation-of-funds-through-fluctuations-in-the-amount-of-exchangeable-assets)
+-
+-[20230606 VINU](#20230606-vinu---price-manipulation)
+-
+-[20230606 UN](#20230606-un---price-manipulation)
+-
+-[20230602 NST SimpleSwap](#20230602-nst-simple-swap---unverified-contract-wrong-approval)
+-
+-[20230601 Cellframenet](#20230601-cellframenet---calculation-issues-during-liquidity-migration)
+-
+-[20230531 ERC20TokenBank](#20230531-erc20tokenbank---price-manipulation)
+-
+-[20230529 Jimbo](#20230529-jimbo---protocol-specific-price-manipulation)
+-
+-[20230529 BabyDogeCoin](#20230529-babydogecoin---lack-slippage-protection)
+-
+-[20230529 FAPEN](#20230529-fapen---wrong-balance-check)
+-
+-[20230529 NOON_NO](#20230529-noon-no---wrong-visibility-in-function)
+-
+-[20230525 GPT](#20230525-gpt-token---fee-machenism-exploitation)
+-
+-[20230524 LocalTrade](#20230524-local-trade-lct---inproper-access-control-of-close-source-contract)
+-
+-[20230524 CS](#20230524-cs-token---outdated-global-variable)
+-
+-[20230523 LFI](#20230523-lfi-token---business-logic-flaw)
+-
+-[20230514 landNFT](#20230514-landNFT---lack-of-permission-control)
+-
+-[20230514 SellToken03](#20230514-selltoken03---unchecked-user-input)
+-
+-[20230513 Bitpaidio](#20230513-bitpaidio---business-logic-flaw)
+-
+-[20230513 SellToken02](#20230513-selltoken02---price-manipulation)
+-
+-[20230512 LW](#20230512-lw---flashloan-price-manipulation)
+-
+-[20230511 SellToken01](#20230511-selltoken01---business-logic-flaw)
+-
+-[20230510 SNK](#20230510-snk---reward-calculation-error)
+-
+-[20230506 Melo](#20230506-melo---access-control)
+-
+-[20230505 DEI](#20230505-dei---wrong-implemention)
+-
+-[20230503 NeverFall](#20230503-NeverFall---price-manipulation)
+-
+-[20230502 Level](#20230502-level---business-logic-flaw)
+-
+-[20230428 0vix](#20230428-0vix---flashloan-price-manipulation)
+-
+-[20230427 SiloFinance](#20230427-Silo-finance---Business-Logic-Flaw)
+-
+-[20230424 Axioma](#20230424-Axioma---business-logic-flaw)
+-
+-[20230419 OLIFE](#20230419-OLIFE----Reflection-token)
+-
+-[20230416 Swapos V2](#20230416-swapos-v2----error-k-value-attack)
+-
+-[20230415 HundredFinance](#20230415-hundredfinance---flashloan-exchangerate-manipulation--erc4626-inflation-attack)
+-
+-[20230413 yearnFinance](#20230413-yearnFinance---misconfiguration)
+-
+-[20230412 MetaPoint](#20230412-metapoint---Unrestricted-Approval)
+-
+-[20230411 Paribus](#20230411-paribus---reentrancy)
+-
+-[20230409 SushiSwap](#20230409-SushiSwap---Unchecked-User-Input)
+-
+-[20230405 Sentiment](#20230405-sentiment---read-only-reentrancy)
+-
+-[20230402 Allbridge](#20230402-allbridge---flashloan-price-manipulation)
+-
+-[20230328 SafeMoon Hack](#20230328-safemoon-hack)
+-
+-[20230328 THENA](#20230328---thena---yield-protocol-flaw)
+-
+-[20230325 DBW](#20230325---dbw--business-logic-flaw)
+-
+-[20230322 BIGFI](#20230322---bigfi---reflection-token)
+-
+-[20230317 ParaSpace NFT](#20230317---paraspace-nft---flashloan--scaledbalanceof-manipulation)
+-
+-[20230315 Poolz](#20230315---poolz---integer-overflow)
+-
+-[20230313 EulerFinance](#20230313---eulerfinance---business-logic-flaw)
+-
+-[20230308 DKP](#20230308---dkp---flashloan-price-manipulation)
+-
+-[20230307 Phoenix](#20230307---phoenix---access-control--arbitrary-external-call)
+-
+-[20230227 LaunchZone](#20230227---launchzone---access-control)
+-
+-[20230227 SwapX](#20230227---swapx---access-control)
+-
+-[20230224 EFVault](#20230224---efvault---storage-collision)
+-
+-[20230222 DYNA](#20230222---dyna---business-logic-flaw)
+-
+-[20230218 RevertFinance](#20230218---revertfinance---arbitrary-external-call-vulnerability)
+-
+-[20230217 Starlink](#20230217---starlink---business-logic-flaw)
+-
+-[20230217 Dexible](#20230217---dexible---arbitrary-external-call-vulnerability)
+-
+-[20230217 Platypusdefi](#20230217---platypusdefi---business-logic-flaw)
+-
+-[20230210 Sheep Token](#20230210---sheep---reflection-token)
+-
+-[20230210 dForce](#20230210---dforce---read-only-reentrancy)
+-
+-[20230207 CowSwap](#20230207---cowswap---arbitrary-external-call-vulnerability)
+-
+-[20230207 FDP Token](#20230207---fdp---reflection-token)
+-
+-[20230203 Orion Protocol](#20230203---orion-protocol---reentrancy)
+-
+-[20230203 Spherax USDs](#20230203---spherax-usds---balance-recalculation-bug)
+-
+-[20230202 BonqDAO](#20230202---BonqDAO---price-oracle-manipulation)
+-
+-[20230126 TomInu Token](#20230126---tinu---reflection-token)
+-
+-[20230119 ThoreumFinance](#20230119---thoreumfinance-business-logic-flaw)
+-
+-[20230118 QTN Token](#20230118---qtntoken---business-logic-flaw)
+-
+-[20230118 UPS Token](#20230118---upstoken---business-logic-flaw)
+-
+-[20230117 OmniEstate](#20230117---OmniEstate---no-input-parameter-check)
+-
+-[20230116 MidasCapital](#20230116---midascapital---read-only-reentrancy)
+-
+-[20230112 UFDao](#20230112---ufdao---incorrect-parameter-setting)
+-
+-[20230112 ROE](#20230112---roefinance---flashloan-price-manipulation)
+-
+-[20230110 BRA](#20230110---bra---business-logic-flaw)
+-
+-[20230103 GDS](#20230103---gds---business-logic-flaw)
+-
+-<details> <summary> 2022 </summary>
+-
+-[20221230 DFS](#20221230---dfs---insufficient-validation--flashloan)
+-
+-[20221229 JAY](#20221229---jay---insufficient-validation--reentrancy)
+-
+-[20221225 Rubic](#20221225---rubic---arbitrary-external-call-vulnerability)
+-
+-[20221223 Defrost](#20221223---defrost---reentrancy)
+-
+-[20221214 Nmbplatform](#20221214---nmbplatform---flashloan-price-manipulation)
+-
+-[20221213 ElasticSwap](#20221213---elasticswap---business-logic-flaw)
+-
+-[20221212 BGLD](#20221212---bgld-deflationary-token---flashloan-price-manipulation)
+-
+-[20221211 Lodestar](#20221211---lodestar---flashloan-price-manipulation)
+-
+-[20221210 MUMUG](#20221210---mumug---flashloan-price-manipulation)
+-
+-[20221210 TIFIToken](#20221210---tifitoken---flashloan-price-manipulation)
+-
+-[20221209 NOVAToken](#20221209---novatoken---malicious-unlimted-minting-rugged)
+-
+-[20221207 AES](#20221207---aes-deflationary-token----business-logic-flaw--flashloan-price-manipulation)
+-
+-[20221205 RFB](#20221205---rfb---predicting-random-numbers)
+-
+-[20221205 BBOX](#20221205---bbox---flashloan-price-manipulation)
+-
+-[20221202 OverNight](#20221202---overnight---flashloan-attack)
+-
+-[20221201 APC](#20221201---apc---flashloan--price-manipulation)
+-
+-[20221129 MBC](#20221129---mbc---business-logic-flaw--access-control)
+-
+-[20221129 SEAMAN](#20221129---seaman---business-logic-flaw)
+-
+-[20221123 NUM](#20221123---num---protocol-token-incompatible)
+-
+-[20221122 AUR](#20221122---aur---lack-of-permission-check)
+-
+-[20221121 SDAO](#20221121---sdao---business-logic-flaw)
+-
+-[20221119 AnnexFinance](#20221119---annexfinance---verify-flashloan-callback)
+-
+-[20221117 UEarnPool](#20221117---uearnpool---flashloan-attack)
+-
+-[20221116 SheepFarm](#20221116---sheepfarm---no-input-validation)
+-
+-[20221110 DFXFinance](#20221110---dfxfinance---reentrancy)
+-
+-[20221109 brahTOPG](#20221109-brahtopg---arbitrary-external-call-vulnerability)
+-
+-[20221108 MEV_0ad8](#20221108-mev_0ad8---arbitrary-call)
+-
+-[20221108 Kashi](#20221108-kashi---price-caching-design-defect)
+-
+-[20221107 MooCAKECTX](#20221107-moocakectx---flashloan-attack)
+-
+-[20221105 BDEX](#20221105-bdex---business-logic-flaw)
+-
+-[20221027 VTF](#20221027-vtf-token---incorrect-reward-calculation)
+-
+-[20221027 Team Finance](#20221027-team-finance---liquidity-migration-exploit)
+-
+-[20221026 N00d Token](#20221026-n00d-token---reentrancy)
+-
+-[20221026 ULME](#20221026-ulme---access-control)
+-
+-[20221024 Market](#20221024-market---read-only-reentrancy)
+-
+-[20221024 MulticallWithoutCheck](#20221024-multicallwithoutcheck---arbitrary-external-call-vulnerability)
+-
+-[20221021 OlympusDAO](#20221021-olympusdao---no-input-validation)
+-
+-[20221020 HEALTH Token](#20221020-health---transfer-logic-flaw)
+-
+-[20221020 BEGO Token](#20221020-bego---incorrect-signature-verification)
+-
+-[20221018 HPAY](#20221018-hpay---access-control)
+-
+-[20221018 PLTD Token](#20221018-pltd---transfer-logic-flaw)
+-
+-[20221017 Uerii Token](#20221017-uerii-token---access-control)
+-
+-[20221014 INUKO Token](#20221014-inuko---flashloan-price-manipulation)
+-
+-[20221014 EFLeverVault](#20221014-eflevervault---verify-flashloan-callback)
+-
+-[20221014 MEVBOT a47b](#20221014-mevbota47b---mevbot-a47b)
+-
+-[20221012 ATK](#20221012-atk---flashloan-manipulate-price)
+-
+-[20221011 Rabby Wallet SwapRouter](#20221011-rabby-wallet-swaprouter---arbitrary-external-call-vulnerability)
+-
+-[20221011 Templedao](#20221011-templedao---insufficient-access-control)
+-
+-[20221010 Carrot](#20221010-carrot---public-functioncall)
+-
+-[20221009 Xave Finance](#20221009-xave-finance---malicious-proposal-mint--transfer-ownership)
+-
+-[20221006 RES-Token](#20221006-RES-Token---pair-manipulate)
+-
+-[20221002 Transit Swap](#20221002-transit-swap---incorrect-owner-address-validation)
+-
+-[20221001 BabySwap](#20221001-babyswap---parameter-access-control)
+-
+-[20221001 RL](#20221001-RL-Token---Incorrect-Reward-calculation)
+-
+-[20221001 Thunder Brawl](#20221001-thunder-brawl---reentrancy)
+-
+-[20220929 BXH](#20220928-bxh---flashloan--price-oracle-manipulation)
+-
+-[20220928 MEVBOT Badc0de](#20220928-MEVBOT---Badc0de)
+-
+-[20220923 RADT-DAO](#20220923-RADT-DAO---pair-manipulate)
+-
+-[20220913 MevBot Private TX](#20220913-mevbot-private-tx)
+-
+-[20220910 DPC](#20220910-dpc---Incorrect-Reward-calculation)
+-
+-[20220909 YYDS](#20220909-YYDS---pair-manipulate)
+-
+-[20220908 NewFreeDAO](#20220908-newfreedao---flashloans-attack)
+-
+-[20220908 Ragnarok Online Invasion](#20220908-ragnarok-online-invasion---broken-access-control)
+-
+-[20220906 NXUSD](#20220906-NXUSD---flashloan-price-oracle-manipulation)
+-
+-[20220905 ZoomproFinance](#20220905-zoomprofinance---flashloans--price-manipulation)
+-
+-[20220902 ShadowFi](#20220902-shadowfi---access-control)
+-
+-[20220902 Bad Guys by RPF](#20220902-bad-guys-by-rpf---business-logic-flaw--missing-check-for-number-of-nft-to-mint)
+-
+-[20220824 LuckyTiger NFT](#20220824-luckytiger-nft---predicting-random-numbers)
+-
+-[20220810 XSTABLE Protocol](#20220810-xstable-protocol---incorrect-logic-check)
+-
+-[20220809 ANCH](#20220809-anch---skim-token-balance)
+-
+-[20220807 EGD Finance](#20220807-egd-finance---flashloans--price-manipulation)
+-
+-[20220802 Nomad Bridge](#20220802-nomad-bridge---business-logic-flaw--incorrect-acceptable-merkle-root-checks)
+-
+-[20220801 Reaper Farm](#20220801-reaper-farm---business-logic-flaw--lack-of-access-control-mechanism)
+-
+-[20220725 LPC](#20220725-lpc---business-logic-flaw--incorrect-recipient-balance-check-did-not-check-senderrecipient-in-transfer)
+-
+-[20220713 Audius](#20220723-audius---storage-collision--malicious-proposal)
+-
+-[20220713 SpaceGodzilla](#20220713-spacegodzilla---flashloans--price-manipulation)
+-
+-[20220710 Omni NFT](#20220710-omni-nft---reentrancy)
+-
+-[20220706 FlippazOne NFT](#20220706-flippazone-nft----accesscontrol)
+-
+-[20220701 Quixotic - Optimism NFT Marketplace](#20220701-quixotic---optimism-nft-marketplace)
+-
+-[20220626 XCarnival](#20220626-xcarnival---infinite-number-of-loans)
+-
+-[20220624 Harmony's Horizon Bridge](#20220624-harmonys-horizon-bridge---private-key-compromised)
+-
+-[20220618 SNOOD](#20220618-snood---miscalculation-on-_spendallowance)
+-
+-[20220616 InverseFinance](#20220616-inversefinance---flashloan--price-oracle-manipulation)
+-
+-[20220608 GYMNetwork](#20220608-gymnetwork---accesscontrol)
+-
+-[20220608 Optimism - Wintermute](#20220608-optimism---wintermute)
+-
+-[20220606 Discover](#20220606-discover---flashloan--price-oracle-manipulation)
+-
+-[20220529 NOVO Protocol](#20220529-novo-protocol---flashloan--price-oracle-manipulation)
+-
+-[20220524 HackDao](#20220524-HackDao---Skim-token-balance)
+-
+-[20220517 ApeCoin](#20220517-apecoin-ape---flashloan)
+-
+-[20220508 Fortress Loans](#20220508-fortress-loans---malicious-proposal--price-oracle-manipulation)
+-
+-[20220430 Saddle Finance](#20220430-saddle-finance---swap-metapool-attack)
+-
+-[20220430 Rari Capital/Fei Protocol](#20220430-rari-capitalfei-protocol---flashloan-attack--reentrancy)
+-
+-[20220428 DEUS DAO](#20220428-deus-dao---flashloan--price-oracle-manipulation)
+-
+-[20220424 Wiener DOGE](#20220424-wiener-doge---flashloan)
+-
+-[20220423 Akutar NFT](#20220423-akutar-nft---denial-of-service)
+-
+-[20220421 Zeed Finance](#20220421-zeed-finance)
+-
+-[20220416 BeanstalkFarms](#20220416-beanstalkfarms---dao--flashloan)
+-
+-[20220415 Rikkei Finance](#20220415-rikkei-finance---accesscontrol--price-oracle-manipulation)
+-
+-[20220412 ElephantMoney](#20220412-elephantmoney---flashloan--price-oracle-manipulation)
+-
+-[20220411 Creat Future](#20220411-creat-future)
+-
+-[20220409 GYMNetwork](#20220409-gymnetwork)
+-
+-[20220329 Ronin Network](#20220329-ronin-network---Bridge)
+-
+-[20220329 Redacted Cartel](#20220329-redacted-cartel---custom-approval-logic)
+-
+-[20220328 SafeMoon Hack](#20230328-safemoon-hack)
+-
+-[20220327 Revest Finance](#20220327-revest-finance---reentrancy)
+-
+-[20220326 Auctus](#20220326-auctus)
+-
+-[20220322 CompoundTUSDSweepTokenBypass](#20220322-compoundtusdsweeptokenbypass)
+-
+-[20220321 OneRing Finance](#20220321-onering-finance---flashloan--price-oracle-manipulation)
+-
+-[20220320 LI.FI](#20220320-LiFi---bridges)
+-
+-[20220320 Umbrella Network](#20220320-umbrella-network---underflow)
+-
+-[20220315 Hundred Finance](#20220313-hundred-finance---erc667-reentrancy)
+-
+-[20220313 Paraluni](#20220313-paraluni---flashloan--reentrancy)
+-
+-[20220309 Fantasm Finance](#20220309-fantasm-finance)
+-
+-[20220305 Bacon Protocol](#20220305-bacon-protocol---reentrancy)
+-
+-[20220303 TreasureDAO](#20220303-treasuredao---zero-fee)
+-
+-[20220214 BuildFinance - DAO](#20220214-buildfinance---dao)
+-
+-[20220208 Sandbox LAND](#20220208-sandbox-land---access-control)
+-
+-[20220206 Meter](#20220206-Meter---bridge)
+-
+-[20220128 Qubit Finance](#20220128-qubit-finance---bridge-address0safetransferfrom-does-not-revert)
+-
+-[20220118 Multichain (Anyswap)](#20220118-multichain-anyswap---insufficient-token-validation)
+-
+-</details>
+-<details> <summary> 2021 </summary>
+-  
+-[20211221 Visor Finance](#20211221-visor-finance---reentrancy)
+-
+-[20211218 Grim Finance](#20211218-grim-finance---flashloan--reentrancy)
+-
+-[20211214 Nerve Bridge](#20211214-nerve-bridge---swap-metapool-attack)
+-
+-[20211130 MonoX Finance](#20211130-monox-finance---price-manipulation)
+-
+-[20211027 Cream Finance](#20211027-creamfinance---price-manipulation)
+-
+-[20211015 Indexed Finance](#20211015-indexed-finance---price-manipulation)
+-
+-[20210916 SushiSwap Miso](#20210916-sushiswap-miso)
+-
+-[20210915 Nimbus Platform](#20210915-nimbus-platform)
+-
+-[20210915 NowSwap Platform](#20210915-nowswap-platform)
+-
+-[20210912 ZABU Finance](#20210912-ZABU-Finance---Deflationary-token-uncompatible)
+-
+-[20210903 DAO Maker](#20210903-dao-maker---bad-access-controal)
+-
+-[20210830 Cream Finance](#20210830-cream-finance---flashloan-attack--reentrancy)
+-
+-[20210817 XSURGE](#20210817-xsurge---flashloan-attack--reentrancy)
+-
+-[20210811 Poly Network](#20210811-poly-network---bridge-getting-around-modifier-through-cross-chain-message)
+-
+-[20210804 WaultFinance](#20210804-waultfinace---flashloan-price-manipulation)
+-
+-[20210728 Levyathan Finance](#20210728-levyathan-finance---i-lost-keys-and-minting-ii-vulnerable-emergencywithdraw)
+-
+-[20210710 Chainswap](#20210710-chainswap---bridge-logic-flaw)
+-
+-[20210702 Chainswap](#20210702-chainswap---bridge-logic-flaw)
+-
+-[20210628 SafeDollar](#20210628-safedollar---deflationary-token-uncompatible)
+-
+-[20210622 Eleven Finance](#20210622-eleven-finance---doesnt-burn-shares)
+-
+-[20210607 88mph NFT](#20210607-88mph-nft---access-control)
+-
+-[20210603 PancakeHunny](#20210603-pancakehunny---incorrect-calculation)
+-
+-[20210527 BurgerSwap](#20210527-burgerswap---mathematical-flaw--reentrancy)
+-
+-[20210519 PancakeBunny](#20210519-pancakebunny---price-oracle-manipulation)
+-
+-[20210125 Sushi Badger Digg](#20210125-sushi-badger-digg---sandwich-attack)
+-
+-</details>
+-<details> <summary> Before 2020 </summary>
+-
+-[20210508 Rari Capital](#20210509-raricapital---cross-contract-reentrancy)
+-
+-[20210508 Value Defi](#20210508-value-defi---cross-contract-reentrancy)
+-
+-[20210428 Uranium](#20210428-uranium---miscalculation)
+-
+-[20210308 DODO](#20210308-dodo---flashloan-attack)
+-
+-[20210305 Paid Network](#20210305-paid-network---private-key-compromised)
+-
+-[20201229 Cover Protocol](#20201229-cover-protocol)
+-
+-[20201121 Pickle Finance](#20201121-pickle-finance)
+-
+-[20201026 Harvest Finance](#20201026-harvest-finance---flashloan-attack)
+-
+-[20200804 Opyn Protocol](#20200804-opyn-protocol---msgValue-in-loop)
+-
+-[20200618 Bancor Protocol](#20200618-bancor-protocol---access-control)
+-
+-[20180422 Beauty Chain](#20180422-beauty-chain---integer-overflow)
+-
+-[20171106 Parity - 'Accidentally Killed It'](#20171106-parity---accidentally-killed-it)
+-
+-</details>
+-
+----
+-
+-### Transaction debugging tools
+-
+-[Phalcon](https://explorer.phalcon.xyz/) | [Tx tracer](https://openchain.xyz/trace) | [Cruise](https://cruise.supremacy.team/) | [Ethtx](https://ethtx.info/) | [Tenderly](https://dashboard.tenderly.co/explorer) | [eigenphi](https://tx.eigenphi.io/analyseTransaction)
+-
+-### Ethereum Signature Database
+-
+-[4byte](https://www.4byte.directory/) | [sig db](https://openchain.xyz/signatures) | [etherface](https://www.etherface.io/hash)
+-
+-### Useful tools
+-
+-[ABI to interface](https://gnidan.github.io/abi-to-sol/) | [Get ABI for unverified contracts](https://abi.w1nt3r.xyz/) | [ETH Calldata Decoder](https://apoorvlathey.com/eth-calldata-decoder/) | [ETHCMD - Guess ABI](https://www.ethcmd.com/tools/decode-calldata/) | [Abi tools](https://openchain.xyz/tools/abi)
+-
+-### Hacks Dashboard
+-
+-[Slowmist](https://hacked.slowmist.io/) | [Defillama](https://defillama.com/hacks) | [De.Fi](https://de.fi/rekt-database) | [Rekt](https://rekt.news/) | [Cryptosec](https://cryptosec.info/defi-hacks/)
+-
+----
+-
+-### List of DeFi Hacks & POCs
+----
+-
+ ### 20230630 Biswap - V3Migrator Exploit
+ 
+ ### Lost: ~$72k
+@@ -5659,6 +5113,8 @@ https://rekt.news/harvest-finance-rekt/
+ 
+ https://etherscan.io/tx/0x35f8d2f572fceaac9288e5d462117850ef2694786992a8c3f6d02612277b0877
+ 
++---
++
+ ### 20200804 Opyn Protocol - msgValue in loop
+ 
+ Testing
+@@ -5741,37 +5197,4 @@ https://elementus.io/blog/which-icos-are-affected-by-the-parity-wallet-bug/
+ 
+ https://etherscan.io/tx/0x05f71e1b2cb4f03e547739db15d080fd30c989eda04d37ce6264c5686e0722c9
+ 
+-https://etherscan.io/tx/0x47f7cff7a5e671884629c93b368cb18f58a993f4b19c2a53a8662e3f1482f690
+-
+-</details>
+-
+-### View Gas Reports
+-
+-Foundry also has the ability to [report](https://book.getfoundry.sh/forge/gas-reports) the `gas` used per function call which mimics the behavior of [hardhat-gas-reporter](https://github.com/cgewecke/hardhat-gas-reporter). Generally speaking if gas costs per function call is very high, then the likelihood of its success is reduced. Gas optimization is an important activity done by smart contract developers.
+-
+-Every poc in this repository can produce a gas report like this:
+-
+-```bash
+-forge test --gas-report --contracts <contract> -vvv
+-```
+-
+-For Example:
+-Let us find out the gas used in the [Audius poc](#20220723-audius---storage-collision--malicious-proposal)
+-
+-**Execution**
+-
+-```bash
+-forge test --gas-report --contracts ./src/test/Audius.exp.sol -vvv
+-```
+-
+-_Demo_
+-
+-![](./AudiusPocGasReport.gif)
+-
+-### Bug Reproduce
+-
+-Moved to [DeFiVulnLabs](https://github.com/SunWeb3Sec/DeFiVulnLabs)
+-
+-### FlashLoan Testing
+-
+-Moved to [DeFiLabs](https://github.com/SunWeb3Sec/DeFiLabs)
++https://etherscan.io/tx/0x47f7cff7a5e671884629c93b368cb18f58a993f4b19c2a53a8662e3f1482f690
+\ No newline at end of file
