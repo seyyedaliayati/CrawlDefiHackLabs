@@ -11,6 +11,7 @@ import tiktoken
 
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.join(root_dir, 'DeFiHackLabs')
 file_path = os.path.join(root_dir, 'README.md')
 cache = dict()
 encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
@@ -28,7 +29,6 @@ def remove_code_blocks(content: str) -> str:
 
     return content
 
-
 def clean_text(content: str) -> str:
     pattern = re.compile(r'Testing')
     content = re.sub(pattern, '', content)
@@ -40,7 +40,6 @@ def clean_text(content: str) -> str:
     assert '\n\n' not in content, content
 
     return content.strip()
-
 
 def clean_solidity(file_content: str) -> str:
     code = file_content
@@ -71,7 +70,6 @@ def clean_solidity(file_content: str) -> str:
 
     return code
 
-
 def extract_code_snippet(file_path, loc):
     with open(file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
@@ -84,13 +82,11 @@ def extract_code_snippet(file_path, loc):
     snippet = ''.join(snippet)
     return snippet, num_tokens_from_string(snippet)
 
-
 def get_imports(node):
     imports = []
     if node['type'] == 'ImportDirective':
         imports.append(node['path'])
     return imports
-
 
 def get_interface(node, file_path: str):
     if node['type'] == 'ContractDefinition' and node['kind'] == 'interface':
@@ -98,8 +94,6 @@ def get_interface(node, file_path: str):
         return {'name': node['name'], 'content': code_snippet, 'token_count': token_count}
 
 # Define a function to traverse the tree and print the names of used user-defined types and function calls
-
-
 def get_variable_types(node):
     types = []
     # If the node is a contract
@@ -132,17 +126,14 @@ def get_variables(node, file_path: str):
                             yield 'address', var_name, addr
 
 def extract_interfaces(file_path: str, get_types=True) -> list:
-    print(file_path)
-    try:
-        if file_path in cache:
-            ast = cache[file_path]
-        else:
-            ast = parser.parse_file(file_path, loc=True)
-            cache[file_path] = ast
-    except Exception as e:
-        print(e)
-        print(file_path)
-        return []
+    if file_path.startswith("src/test/"):
+        file_path = os.path.join(root_dir, file_path)
+
+    if file_path in cache:
+        ast = cache[file_path]
+    else:
+        ast = parser.parse_file(file_path, loc=True)
+        cache[file_path] = ast
     all_interfaces = []
     imports = []
     types = []
@@ -173,18 +164,14 @@ def extract_interfaces(file_path: str, get_types=True) -> list:
 
     return all_interfaces
 
-
 def extract_vulnerable_contract_info(file_path: str, title: str, interface_names: list) -> str:
-    try:
-        if file_path in cache:
-            ast = cache[file_path]
-        else:
-            ast = parser.parse_file(file_path, loc=True)
-            cache[file_path] = ast
-    except Exception as e:
-        print(e)
-        print(file_path)
-        return []
+    if file_path.startswith("src/test"):
+        file_path = os.path.join(root_dir, file_path)
+    if file_path in cache:
+        ast = cache[file_path]
+    else:
+        ast = parser.parse_file(file_path, loc=True)
+        cache[file_path] = ast
     variables_with_values = {}
     for node in ast['children']:
         res = get_variables(node, file_path)
@@ -193,12 +180,13 @@ def extract_vulnerable_contract_info(file_path: str, title: str, interface_names
         # print()
     # print(variables_with_values)
     return variables_with_values
-  
-
 
 def fetch_data(content: str) -> str:
     pattern = re.compile(r'^### (\d{8})\s*(.*)', re.MULTILINE)
     dates = re.findall(pattern, content)
+    if len(dates) == 0:
+        print(content)
+        exit()
     date, title = dates[0]
     parts = title.split(' - ')
     if len(parts) == 1:
@@ -229,8 +217,8 @@ def fetch_data(content: str) -> str:
     assert len(pathes) > 0, content
 
     # reference links
-    # pattern = re.compile(r'(^https:\/\/.*\s*$)', re.MULTILINE)
-    # links = re.findall(pattern, content)
+    pattern = re.compile(r'(^https:\/\/.*\s*$)', re.MULTILINE)
+    links = re.findall(pattern, content)
 
     # extract data
     data = []
@@ -239,8 +227,8 @@ def fetch_data(content: str) -> str:
 
         if p.startswith('/'):
             p = p[1:]
-        if not p.endswith('ARA_exp.sol'):
-            continue
+        # if not p.endswith('ARA_exp.sol'):
+        #     continue
         data_item['contract_path'] = p
 
         f = open(os.path.join(root_dir, p), 'r', encoding='utf-8')
@@ -259,19 +247,21 @@ def fetch_data(content: str) -> str:
 
         data.append(data_item)
 
-    # assert len(data) == len(pathes) >= 0, pathes
+    assert len(data) == len(pathes) >= 0, pathes
 
     info = {
         'id': sha256(content.encode()).hexdigest()[:10],
-        # 'content': content.strip(),
+        'is_ready': False,
+        'content': content.strip(),
         'date': date.strip(),
-        'title': tokens.strip(),
+        'target': tokens.strip(),
         'attack_title': attack.strip() if attack else None,
-        'attack_explain': None, 
+        'vuln_desc': "A description of the exposed vulnerability.",
+        'poc_explain': "An explaination of how the poc exposes the vulnerability.", 
         'lost_value': lost.strip() if lost else None,
         'github_path': "https://github.com/SunWeb3Sec/DeFiHackLabs/",
-        # 'reference_links': [{'link': link.strip(), 'content': 'content of the link'} for link in links],
-        'data': data
+        'reference_links': [{'link': link.strip(), 'content': 'content of the link'} for link in links],
+        'data': data,
     }
     return info
 
@@ -291,8 +281,22 @@ if __name__ == '__main__':
     # import random
 
     # print(random.choice(data)['testcases'][0])
+    # shuffle
+    random.shuffle(data)
+    split_index = int(0.9 * len(data))
+    # Split the data into training and evaluation datasets
+    train_data = data[:split_index]
+    print(len(train_data))
+    eval_data = data[split_index:]
+    print(len(eval_data))
 
-    with open('./data.json', 'w') as f:
-        json.dump(data, f, indent=2)
+    # Save the training data
+    with open('./train_data.json', 'w') as f:
+        json.dump(train_data, f, indent=4)
+
+    # Save the evaluation data
+    with open('./eval_data.json', 'w') as f:
+        json.dump(eval_data, f, indent=4)
+
 
     # TODO: Upload dataset to huggingface hub

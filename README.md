@@ -6,8 +6,17 @@ The goal is to crawl the DefiHackLabs repository and restructure the PoC in a mo
 
 # Apply Patch
 ```
-git apply crawl.diff
+git submodule init
+git submodule update
+cd DeFiHackLabs
+git apply ../crawl.diff
 ```
+
+# Solidity Grammar
+Install antlr4
+Replace `Solidity.g4` with https://github.com/antlr/grammars-v4/blob/master/solidity/Solidity.g4
+
+
 
 # Dataset Info
 Larger Than 4096 Tokens: 10
@@ -32,3 +41,6 @@ Number of Test Cases: 233
 - [ ] Update ChatGPT prompt.
 - [ ] Create the train/eval dataset --> (interface, vuln, testcase, explain).
 - [ ] Check if more properties are needed?
+
+
+""
