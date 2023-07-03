@@ -93,19 +93,19 @@
     },
     {
         "id": "dc91671aa8",
-        "is_ready": false,
+        "is_ready": true,
         "content": "### 20230618 ARA - Incorrect handling of permissions\n### Lost: ~$125k\n#### Contract\n[ARA_exp.sol](src/test/ARA_exp.sol)\n#### Link Reference\nhttps://twitter.com/BeosinAlert/status/1670638160550965248",
         "date": "20230618",
         "target": "ARA",
         "attack_title": "Incorrect handling of permissions",
-        "vuln_desc": "A description of the exposed vulnerability.",
-        "poc_explain": "An explaination of how the poc exposes the vulnerability.",
+        "vuln_desc": "This is a case of a permission handling flaw in the smart contract, often categorized as 'improper authorization' or 'permission mishandling'. This vulnerability arises when a contract does not appropriately check the permissions of a user, allowing them to perform actions they should not be able to. In this particular case, the swap contract does not limit the funds it can transfer from the caller for the purpose of swapping.",
+        "poc_explain": "The Proof of Concept (PoC) testcase simulates the entire exploit flow. It first sets up the necessary initial state and then executes the exploit steps in the 'testExploit' and 'DPPFlashLoanCall' functions. \n\n1. The attacker initiates a flashloan of 1,202,701 USDT. This is simulated in the 'testExploit' function where the flashLoan method of DPPOracle is called.\n2. They then call the exploitable swap contract to exchange 163,497 ARA for 123,246 USDT. This is simulated in the 'DPPFlashLoanCall' function using the 'callSwapContract' method.\n3. Using the flashloaned 1,202,701 USDT, the attacker acquires 504,469 ARA, artificially inflating the $ARA price. This is simulated using the 'routerV3Swap' method.\n4. The swap contract is called again to swap 132,123 USDT for 12,179 ARA, allowing the approved address to acquire $ARA at an inflated price. This is simulated again using the 'callSwapContract' method.\n5. Finally, the attacker swaps the 504,469 ARA for 1,327,617 USDT. This is simulated again using the 'routerV3Swap' method.\n\nThis PoC clearly demonstrates the vulnerability by replicating the exploit steps in a controlled environment, highlighting the problematic permission handling and the consequent exploit possibilities.",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
             {
                 "link": "https://twitter.com/BeosinAlert/status/1670638160550965248",
-                "content": "content of the link"
+                "content": "Exploit Analysis for $ARA\n\n@AraBlocks was exploited, resulting in a loss of $125k as observed in the transaction: https://bscscan.com/tx/0xd87cdecd5320301bf9a985cc17f6944e7e7c1fbb471c80076ef2d031cc3023b2.\n\nThe attacker's address is 0xF84efA8a9F7E68855CF17EAaC9c2f97A9d131366.\n\nThe main cause of this exploit was a flaw in the contract's permission handling mechanism. \n\nNotably, the address 0xB817Ef68d764F150b8d73A2ad7ce9269674538E0 had substantial $ARA and $USDT approvals set to a swap contract. This contract did not limit the funds it could transfer from the caller for the purpose of swapping.\n\nThe attack unfolded as follows:\n\n1. The attacker initiated a flashloan of 1,202,701 USDT.\n2. They then called the swap contract to exchange 163,497 ARA for 123,246 USDT.\n3. Using the flashloaned 1,202,701 USDT, the attacker acquired 504,469 ARA, artificially increasing the $ARA price.\n4. The swap contract was called again to swap 132,123 USDT for 12,179 ARA. This move allowed the approved address to acquire $ARA at an inflated price.\n5. Finally, the attacker swapped the 504,469 ARA for 1,327,617 USDT.\n\nThis exploit highlights the potential risks associated with poorly managed permissions and unrestricted approvals in contract design."
             }
         ],
         "data": [
@@ -144,19 +144,19 @@
     },
     {
         "id": "7d37f391f5",
-        "is_ready": false,
+        "is_ready": true,
         "content": "### 20230419 OLIFE - Reflection token\n### Lost: ~32 WBNB\n#### Contract\n[OLIFE_exp.sol](src/test/OLIFE_exp.sol)\n#### Link Reference\nhttps://twitter.com/BeosinAlert/status/1648520494516420608",
         "date": "20230419",
         "target": "OLIFE",
         "attack_title": "Reflection token",
-        "vuln_desc": "A description of the exposed vulnerability.",
-        "poc_explain": "An explaination of how the poc exposes the vulnerability.",
+        "vuln_desc": "The vulnerability can be categorized as an 'Inflation Vulnerability.' Specifically, it's a defect in the token transfer logic of the $OLIFE contract. When the transfer operation is performed, the _reflectFee function is called which progressively diminishes the _tTotal value. This leads to an artificial inflation of the balance in the liquidity pool when computed via the balanceOf function.",
+        "poc_explain": "The provided Proof of Concept (PoC) exposes this vulnerability by demonstrating a sequence of operations that lead to the exploitative opportunity:\n\n1. A flash loan of 969 WBNB is initiated through the DVM contract.\n2. Using PancakeSwap, the borrowed WBNB is swapped for OLIFE tokens.\n3. The script runs a loop of transfer operations. This operation is aimed at invoking the _reflectFee function 19 times, progressively reducing the _tTotal value which significantly inflates the balance of OLIFE tokens in the liquidity pool.\n4. The deliver function is then called, which transfers a specific amount of OLIFE tokens and reduces the currentRate further.\n5. Now, the OLIFE balance in the pool is significantly inflated, and the OLIFE-WBNB liquidity pool reserves are calculated.\n6. A swap operation is called on the OLIFE-WBNB pair contract. Due to the inflated balance, a significant amount of WBNB is withdrawn from the pool.\n7. Finally, the flash loan is repaid.\n\nThus, the PoC effectively exposes the vulnerability by demonstrating how it can be exploited to withdraw more funds from the pool than what should have been possible under normal conditions.",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
             {
                 "link": "https://twitter.com/BeosinAlert/status/1648520494516420608",
-                "content": "content of the link"
+                "content": "The transfer operation of $OLIFE invokes the _reflectFee function, which progressively reduces the overall value of _tTotal. Over time, this action significantly inflates the balance of the pool when computed through the balanceOf function, providing an exploitable opportunity.\nA hacker can directly call the swap function to extract $WBNB from the pool.\nThe stolen funds have been transferred to the following address: 0x662D2dC484D65a3Ba4Da80E36EAa9a400AF0726B.\n"
             }
         ],
         "data": [
@@ -201,19 +201,19 @@
     },
     {
         "id": "ade946fb48",
-        "is_ready": false,
+        "is_ready": true,
         "content": "### 20221201 - APC - FlashLoan & price manipulation\n### Lost: $6k\n#### Contract\n[APC_exp.sol](src/test/APC_exp.sol)\n#### Link reference\nhttps://twitter.com/BlockSecTeam/status/1598262002010378241",
         "date": "20221201",
         "target": "APC",
         "attack_title": "FlashLoan & price manipulation",
-        "vuln_desc": "A description of the exposed vulnerability.",
-        "poc_explain": "An explaination of how the poc exposes the vulnerability.",
+        "vuln_desc": "The contract (0x5a88114f02bffb04a9a13a776f592547b3080237) deployed on Binance Smart Chain (BSC) is vulnerable to price manipulation. It is suspected that the contract's swap price is determined by the reserve balances of its corresponding PancakeSwap pair. This condition can be exploited by artificially inflating or deflating the reserve balances, thereby manipulating the swap price.",
+        "poc_explain": "The PoC demonstrates this vulnerability by executing a sequence of steps:\n\n1. The attacker uses the 'USDTToAPC' function to convert their entire USDT holdings into APC tokens, inflating the reserve balance and the price of the APC token.\n2. The 'transSwap.swap' function is then invoked to swap APC tokens for MUSD tokens at this artificially inflated price, allowing the attacker to obtain more MUSD tokens than they should have been able to under normal market conditions.\n3. The attacker subsequently dumps the APC tokens using the 'APCToUSDT' function, causing the price of APC to plummet back to normal or even lower.\n4. The 'transSwap.swap' function is invoked once more to swap MUSD back to APC tokens at this deflated price, resulting in an excess of APC tokens.\n5. The excess APC tokens are then converted back into USDT using the 'APCToUSDT' function. \n6. Finally, the loan amount of USDT is returned to the lender (Dodo), and the attacker ends up with a profit in USDT. \n\nIn essence, the attacker is able to exploit the contract's reliance on PancakeSwap reserve balances to manipulate prices and make a profit.",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
             {
                 "link": "https://twitter.com/BlockSecTeam/status/1598262002010378241",
-                "content": "content of the link"
+                "content": "A contract (0x5a88114f02bffb04a9a13a776f592547b3080237) deployed on Binance Smart Chain (BSC) appears to have been compromised through price manipulation. Since the source code of this contract is not publicly available, we speculate that the swap price depends on the reserve balances of the associated PancakeSwap pair. For further information, refer to the transaction details provided in the following link:\nhttps://phalcon.blocksec.com/tx/bsc/0xf2d4559aeb945fb8e4304da5320ce6a2a96415aa70286715c9fcaf5dbd9d7ed2\n\nUpon investigation, we've confirmed that the vulnerability indeed stems from the fact that the swap price is determined based on the reserve balances of the corresponding PancakeSwap pair."
             }
         ],
         "data": [
