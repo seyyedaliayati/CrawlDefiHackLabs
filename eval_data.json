@@ -8,6 +8,8 @@
         "attack_title": "Public functionCall",
         "vuln_desc": "The vulnerability in the code is an unrestricted function call. The `transReward` function allows any arbitrary data to be passed to the `functionCall` function without any validation or restriction. This can potentially lead to unauthorized actions or the execution of arbitrary code.",
         "poc_explain": "The proof-of-concept (PoC) testcase demonstrates the exploitation of the unrestricted function call vulnerability. In the `testExploit` function, the attacker first calls the `transReward` function with specific data to set the owner of the `Carrot` contract. Then, the attacker performs a transferFrom operation and swaps `Carrot` tokens to BSC-USD tokens using the `CarrotToUST` function. This showcases how an attacker can take advantage of the vulnerability to execute unauthorized operations and potentially manipulate the contract for their own benefit.",
+        "address": "0xcFF086EaD392CcB39C49eCda8C974ad5238452aC",
+        "type": "ICarrot",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
@@ -63,6 +65,8 @@
         "attack_title": "Flashloans Attack",
         "vuln_desc": "The vulnerability can be classified as an insecure reward mechanism. In particular, the flaw lies in the reward calculation method of the targeted smart contract. This method overly relies on the caller's token balance without considering other potential factors. This simplistic calculation and distribution process is easily exploitable and can lead to an attacker draining all the funds from the pool.",
         "poc_explain": "The proof of concept (PoC) reveals the vulnerability through a series of contract interactions and transactions.\n\n1. It starts by initializing a flashloan from PancakeSwap, borrowing a significant amount of $WBNB and converting it into $NFD tokens.\n2. The $NFD tokens are then transferred to an attacker contract. This contract generates another contract (Contract 2) to receive the funds.\n3. Contract 2 calls a specific function (0x6811e3b9) in the vulnerable contract. This function calculates the reward based on the token balance and transfers it to the caller.\n4. After receiving the reward, Contract 2 transfers the funds to a newly deployed attack contract and repeats the process. The loop continues until all funds from the pool have been withdrawn.\n5. Once all the funds have been drained, the attacker swaps the $NFD tokens back to $WBNB via PancakeSwap, repays the flashloan, and retains the profit.\n\nThis process effectively showcases how the insecure reward calculation method can be exploited to drain all the funds from the contract. The PoC test case emulates the real-life steps taken by an attacker to exploit the vulnerability.",
+        "address": "0x8B068E22E9a4A9bcA3C321e0ec428AbF32691D1E",
+        "type": null,
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
@@ -100,6 +104,8 @@
         "attack_title": "Incorrect handling of permissions",
         "vuln_desc": "This is a case of a permission handling flaw in the smart contract, often categorized as 'improper authorization' or 'permission mishandling'. This vulnerability arises when a contract does not appropriately check the permissions of a user, allowing them to perform actions they should not be able to. In this particular case, the swap contract does not limit the funds it can transfer from the caller for the purpose of swapping.",
         "poc_explain": "The Proof of Concept (PoC) testcase simulates the entire exploit flow. It first sets up the necessary initial state and then executes the exploit steps in the 'testExploit' and 'DPPFlashLoanCall' functions. \n\n1. The attacker initiates a flashloan of 1,202,701 USDT. This is simulated in the 'testExploit' function where the flashLoan method of DPPOracle is called.\n2. They then call the exploitable swap contract to exchange 163,497 ARA for 123,246 USDT. This is simulated in the 'DPPFlashLoanCall' function using the 'callSwapContract' method.\n3. Using the flashloaned 1,202,701 USDT, the attacker acquires 504,469 ARA, artificially inflating the $ARA price. This is simulated using the 'routerV3Swap' method.\n4. The swap contract is called again to swap 132,123 USDT for 12,179 ARA, allowing the approved address to acquire $ARA at an inflated price. This is simulated again using the 'callSwapContract' method.\n5. Finally, the attacker swaps the 504,469 ARA for 1,327,617 USDT. This is simulated again using the 'routerV3Swap' method.\n\nThis PoC clearly demonstrates the vulnerability by replicating the exploit steps in a controlled environment, highlighting the problematic permission handling and the consequent exploit possibilities.",
+        "address": "0x7ba5dd9bb357afa2231446198c75bac17cefcda9",
+        "type": null,
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
@@ -151,6 +157,8 @@
         "attack_title": "Reflection token",
         "vuln_desc": "The vulnerability can be categorized as an 'Inflation Vulnerability.' Specifically, it's a defect in the token transfer logic of the $OLIFE contract. When the transfer operation is performed, the _reflectFee function is called which progressively diminishes the _tTotal value. This leads to an artificial inflation of the balance in the liquidity pool when computed via the balanceOf function.",
         "poc_explain": "The provided Proof of Concept (PoC) exposes this vulnerability by demonstrating a sequence of operations that lead to the exploitative opportunity:\n\n1. A flash loan of 969 WBNB is initiated through the DVM contract.\n2. Using PancakeSwap, the borrowed WBNB is swapped for OLIFE tokens.\n3. The script runs a loop of transfer operations. This operation is aimed at invoking the _reflectFee function 19 times, progressively reducing the _tTotal value which significantly inflates the balance of OLIFE tokens in the liquidity pool.\n4. The deliver function is then called, which transfers a specific amount of OLIFE tokens and reduces the currentRate further.\n5. Now, the OLIFE balance in the pool is significantly inflated, and the OLIFE-WBNB liquidity pool reserves are calculated.\n6. A swap operation is called on the OLIFE-WBNB pair contract. Due to the inflated balance, a significant amount of WBNB is withdrawn from the pool.\n7. Finally, the flash loan is repaid.\n\nThus, the PoC effectively exposes the vulnerability by demonstrating how it can be exploited to withdraw more funds from the pool than what should have been possible under normal conditions.",
+        "address": "0xb5a0Ce3Acd6eC557d39aFDcbC93B07a1e1a9e3fa",
+        "type": "IOceanLife",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
@@ -208,6 +216,8 @@
         "attack_title": "FlashLoan & price manipulation",
         "vuln_desc": "The contract (0x5a88114f02bffb04a9a13a776f592547b3080237) deployed on Binance Smart Chain (BSC) is vulnerable to price manipulation. It is suspected that the contract's swap price is determined by the reserve balances of its corresponding PancakeSwap pair. This condition can be exploited by artificially inflating or deflating the reserve balances, thereby manipulating the swap price.",
         "poc_explain": "The PoC demonstrates this vulnerability by executing a sequence of steps:\n\n1. The attacker uses the 'USDTToAPC' function to convert their entire USDT holdings into APC tokens, inflating the reserve balance and the price of the APC token.\n2. The 'transSwap.swap' function is then invoked to swap APC tokens for MUSD tokens at this artificially inflated price, allowing the attacker to obtain more MUSD tokens than they should have been able to under normal market conditions.\n3. The attacker subsequently dumps the APC tokens using the 'APCToUSDT' function, causing the price of APC to plummet back to normal or even lower.\n4. The 'transSwap.swap' function is invoked once more to swap MUSD back to APC tokens at this deflated price, resulting in an excess of APC tokens.\n5. The excess APC tokens are then converted back into USDT using the 'APCToUSDT' function. \n6. Finally, the loan amount of USDT is returned to the lender (Dodo), and the attacker ends up with a profit in USDT. \n\nIn essence, the attacker is able to exploit the contract's reliance on PancakeSwap reserve balances to manipulate prices and make a profit.",
+        "address": "0x5a88114f02bffb04a9a13a776f592547b3080237",
+        "type": "TransparentUpgradeableProxy",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
@@ -252,19 +262,21 @@
     },
     {
         "id": "d042eb191f",
-        "is_ready": false,
+        "is_ready": true,
         "content": "### 20230218 - RevertFinance - Arbitrary External Call Vulnerability\n### Lost: ~$30k\n#### Contract\n[RevertFinance_exp.sol](src/test/RevertFinance_exp.sol)\n#### Link Reference\nhttps://mirror.xyz/revertfinance.eth/3sdpQ3v9vEKiOjaHXUi3TdEfhleAXXlAEWeODrRHJtU",
         "date": "20230218",
         "target": "RevertFinance",
         "attack_title": "Arbitrary External Call Vulnerability",
-        "vuln_desc": "A description of the exposed vulnerability.",
-        "poc_explain": "An explaination of how the poc exposes the vulnerability.",
+        "vuln_desc": "The vulnerability appears to be a form of 'Arbitrary Function Call' or 'Function Injection' attack. This type of attack is particularly dangerous as it allows an attacker to execute arbitrary functions in the context of another contract, which can lead to asset theft, manipulation of contract state, or other unauthorized activities.\nIn this particular case, the vulnerability lies in the design of the `swap` function in the `V3Utils` contract. This function takes a `SwapParams` struct as an argument, where one of the struct members is `swapData`. The `swapData` parameter is of type bytes and appears to be intended to carry the encoded function call data for a token swap operation. However, due to a lack of sufficient validation or controls on the execution of this data, the attacker is able to supply arbitrary function call data in `swapData`, leading to the execution of any function of their choice.",
+        "poc_explain": "The provided Proof-of-Concept (PoC) smart contract, `ContractTest`, demonstrates the vulnerability by executing a series of operations that exploit the `swap` function in the `V3Utils` contract.\n\nIn the `testExploit` function, the PoC contract iterates over a list of victim addresses. For each victim, it checks the balance of USDC and the allowance granted to the `V3Utils` contract. If the allowance is less than the balance, it takes the allowance value as the transfer amount, otherwise, it takes the balance.\n\nIt then prepares the `swapData` parameter by encoding a call to the `transferFrom` function, instructing the `V3Utils` contract to transfer the calculated amount of USDC from the victim's account to the PoC contract itself. The `swapData` is inserted into a `SwapParams` struct, which is then passed to the `swap` function of the `V3Utils` contract. Since `V3Utils` does not properly validate the `swapData` input, it executes the arbitrary function call supplied by the attacker, leading to the unauthorized transfer of USDC.\n\nThe PoC then decreases the `counter` variable by 1 for every swap. The `balanceOf` function is designed to return 1 if `counter` equals 1, thus tricking the `V3Utils` contract into believing that the `ContractTest` has a balance, enabling the arbitrary function call.",
+        "address": "0x531110418d8591C92e9cBBFC722Db8FFb604FAFD",
+        "type": "V3Utils",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
             {
                 "link": "https://mirror.xyz/revertfinance.eth/3sdpQ3v9vEKiOjaHXUi3TdEfhleAXXlAEWeODrRHJtU",
-                "content": "content of the link"
+                "content": "On February 18th, 2023, an attack occurred on Revert Finance's V3Utils contract, resulting in the theft of just under $30,000 USD from users. The attack targeted the 'Atomic swaps into V3 positions' feature implemented through the V3Utils contract.\n\nThe attack was first reported by a user on Revert Finance's Discord server, who had their Polygon USDC stolen after approving it via the single token add liquidity feature. The team quickly disabled the Atomic Swap feature to prevent further harm to users.\n\nUpon investigation, it was discovered that the exploit involved the V3Utils contract and an interaction with a suspicious, unverified, and recently deployed contract. It was determined that the swapRouter parameter was used as the vector for the attack, allowing the attacker to execute arbitrary code against the contract with the V3Utils as the caller.\n\nTo mitigate the attack, Revert Finance alerted all possible users who might have approved allowances for the exploited contract. They posted messages on Discord, Twitter, and Telegram, urging users to revoke any approved balances. Etherscan also marked the contracts as 'requested for revoking' across all networks.\n\nThrough community collaboration and the implementation of countermeasures, the team was able to refund affected users and capture most of the vulnerable funds. A bot was deployed to monitor transfers into vulnerable accounts and execute the refunding process.\n\nThe attack involved five external owned accounts (EOAs) across different networks: one on the mainnet, one on Polygon, and three on Optimism. The mainnet and Polygon accounts were funded via multi-chain bridging and Tornado Cash, while the Optimism accounts were funded through exchanges and bridges.\n\nRevert Finance acknowledges their mistake in underestimating the risk of the contract and not conducting a full audit. They express their commitment to conducting external audits for all deployments in the future and ensuring the security of user funds.\n\nOverall, the attack resulted in the theft of approximately $30,000 USD, but the affected users have been fully refunded through airdrops from Revert Finance's designated account on each respective network.\n"
             }
         ],
         "data": [
@@ -297,19 +309,21 @@
     },
     {
         "id": "811c348123",
-        "is_ready": false,
+        "is_ready": true,
         "content": "### 20221212 - BGLD (Deflationary token) - FlashLoan price manipulation\n### Lost: $18k\n#### Contract\n[BGLD_exp.sol](src/test/BGLD_exp.sol)\n#### Link reference\nhttps://twitter.com/BlockSecTeam/status/1602335214356660225",
         "date": "20221212",
         "target": "BGLD (Deflationary token)",
         "attack_title": "FlashLoan price manipulation",
-        "vuln_desc": "A description of the exposed vulnerability.",
-        "poc_explain": "An explaination of how the poc exposes the vulnerability.",
+        "vuln_desc": "This is an 'Insufficient liquidity check / Price Manipulation` vulnerability.\nThis exploit took advantage of insufficient liquidity checks in the $BGLD token's functionality, specifically related to transfer fees. Essentially, the attacker manipulated the reserves of $BGLD and WBNB (wrapped Binance Coin) in the liquidity pool, lowering the reserve of $BGLD to an exceptionally deficient level. Then, they swapped $BGLD for another token (WBNB), obtaining a much higher amount than normally possible.",
+        "poc_explain": "The Proof of Concept (PoC) exploit contract performs the following actions to demonstrate the vulnerability:\n\n1. It uses a DVM (DODO Versatile Market) to flash loan WBNB tokens. Flash loans are uncollateralized loans that must be returned within the same transaction they're taken out in. \n2. It then migrates oldBGLD to newBGLD using the migration function of the Proxy contract.\n3. The attacker swaps newBGLD to DEBT token using the PancakeSwap router.\n4. The contract then executes another flash loan operation using the newBGLD_DEBT pair.\n5. Again, it calls the migrate function of the Proxy contract to convert oldBGLD to newBGLD.\n6. It repeats the operation of swapping newBGLD to DEBT.\n7. Finally, the attacker swaps DEBT to USDT (Tether), a stablecoin, to secure the profits.\n\nIn essence, the attacker manipulates the reserves and leverages flash loans to extract more value than they put in, essentially draining the pool for their profit. They then convert these ill-gotten gains into a stablecoin, which stabilizes their profits and makes them easy to extract from the system.",
+        "address": "0xC2319E87280c64e2557a51Cb324713Dd8d1410a3",
+        "type": "IERC20",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
             {
                 "link": "https://twitter.com/BlockSecTeam/status/1602335214356660225",
-                "content": "content of the link"
+                "content": "$BGLD has been exploited due to an additional fee charged on transfers. The root cause of the exploit is that the exploiter reduces the reserve of $BGLD in the pair to a deficient level and then swaps it out for another token (WBNB).\n\nExploitation transaction:\nhttps://phalcon.blocksec.com/tx/bsc/0xea108fe94bfc9a71bb3e4dee4a1b0fd47572e6ad6aba8b2155ac44861be628ae\n\nThe attacker has swapped the tokens into 4.3 million worth of Ether on the Ethereum network.\nThe tokens on BSC are worth 232 million, but there may not be enough liquidity in the DEX pools, so the actual profit should be smaller."
             }
         ],
         "data": [
@@ -361,6 +375,8 @@
         "attack_title": "integer overflow",
         "vuln_desc": "A description of the exposed vulnerability.",
         "poc_explain": "An explaination of how the poc exposes the vulnerability.",
+        "address": "",
+        "type": "",
         "lost_value": null,
         "github_path": "https://github.com/SunWeb3Sec/DeFiHackLabs/",
         "reference_links": [
