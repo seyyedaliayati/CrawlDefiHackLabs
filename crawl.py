@@ -14,7 +14,8 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.join(root_dir, 'DeFiHackLabs')
 file_path = os.path.join(root_dir, 'README.md')
 cache = dict()
-encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
+encoding = tiktoken.encoding_for_model('gpt-4')
+split = False
 
 def num_tokens_from_string(string: str) -> int:
     """Returns the number of tokens in a text string."""
@@ -251,16 +252,17 @@ def fetch_data(content: str) -> str:
 
     info = {
         'id': sha256(content.encode()).hexdigest()[:10],
-        'is_ready': False,
         'content': content.strip(),
         'date': date.strip(),
         'target': tokens.strip(),
-        'attack_title': attack.strip() if attack else None,
-        'vuln_desc': "A description of the exposed vulnerability.",
-        'poc_explain': "An explaination of how the poc exposes the vulnerability.", 
+        'attack_title': attack.strip().title() if attack else None,
+        'attack_strategy': None,
+        'address': None,
+        'vuln_desc': None,
+        'target_function': None,
         'lost_value': lost.strip() if lost else None,
         'github_path': "https://github.com/SunWeb3Sec/DeFiHackLabs/",
-        'reference_links': [{'link': link.strip(), 'content': 'content of the link'} for link in links],
+        'reference_links': [{'link': link.strip(), 'content': None} for link in links if '/tx/' not in link],  # Skipping transaction links
         'data': data,
     }
     return info
@@ -277,26 +279,21 @@ if __name__ == '__main__':
             data.append(fetch_data(hack))
         assert len(data) == len(hacks), "len(data) != len(hacks)"
 
-
-    # import random
-
-    # print(random.choice(data)['testcases'][0])
-    # shuffle
+    # Shuffle the data
     random.shuffle(data)
-    split_index = int(0.9 * len(data))
-    # Split the data into training and evaluation datasets
-    train_data = data[:split_index]
-    print(len(train_data))
-    eval_data = data[split_index:]
-    print(len(eval_data))
+    
+    with open('./data.json', 'w') as f:
+        json.dump(data, f, indent=4)
+    
+    if split:
+        # Split the data into training and evaluation datasets
+        split_index = int(0.9 * len(data))
+        train_data = data[:split_index]
+        print(len(train_data))
+        eval_data = data[split_index:]
+        print(len(eval_data))
 
-    # Save the training data
-    with open('./train_data.json', 'w') as f:
-        json.dump(train_data, f, indent=4)
-
-    # Save the evaluation data
-    with open('./eval_data.json', 'w') as f:
-        json.dump(eval_data, f, indent=4)
-
-
-    # TODO: Upload dataset to huggingface hub
+        with open('./train_data.json', 'w') as f:
+            json.dump(train_data, f, indent=4)
+        with open('./eval_data.json', 'w') as f:
+            json.dump(eval_data, f, indent=4)
